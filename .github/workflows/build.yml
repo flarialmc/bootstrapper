@@ -1,28 +1,33 @@
-name: Build Bootstrapper.
+name: Build
+
 on:
   push:
     branches: ["main"]
   workflow_dispatch:
 
 jobs:
-  check:
+  checkout:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-    
-    - name: Check
-      shell: bash
-      run: |
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check
+        shell: bash
+        run: |
           if [[ "${{ github.event.head_commit.message }}" != *"release:"* ]]; then
-              gh run cancel ${{ github.run_id }}
-              gh run watch ${{ github.run_id }}
+            gh run cancel ${{ github.run_id }}
+            gh run watch ${{ github.run_id }}
           fi
+
   build:
     runs-on: windows-latest
+    needs: checkout
     steps:
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+
       - name: Build
-      - uses: msys2/setup-msys2@v2
-      - shell: msys2 {0}
+        shell: msys2 {0}
         run: |
           uname -a
