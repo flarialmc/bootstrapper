@@ -39,4 +39,4 @@ jobs:
         shell: msys2 {0} -ucrt64
         run: |
           uname -a
-          gcc.exe
+          gcc
