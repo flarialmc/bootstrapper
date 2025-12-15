@@ -23,14 +23,14 @@ jobs:
     runs-on: windows-latest
     needs: checkout
     steps:
-      - name: Build
+      - name: Install & setup MSYS2 environment.
         uses: msys2/setup-msys2@v2
-        
         with: 
           msystem: UCRT64
           update: true
           install: git mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-MinHook
-        
+
+      - name: Build a new release with required UCRT64 packages.
         shell: msys2 {0}
         run: |
-          git clone https://github.com/flarialmc/bootstrapper
+          which gcc
