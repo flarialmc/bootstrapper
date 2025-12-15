@@ -11,8 +11,6 @@ jobs:
     steps:
       - name: Check if a build should be released.
         uses: actions/checkout@v4
-
-      - name: Check
         env:
             GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -20,17 +18,18 @@ jobs:
           if [[ "${{ github.event.head_commit.message }}" != *"release:"* ]]; then
             exit 1
           fi
-
   build:
     runs-on: windows-latest
     needs: checkout
     steps:
-      - name: Build
+      - name: Install & setup MSYS2 environment.
         uses: msys2/setup-msys2@v2
         with: 
           msystem: UCRT64
           update: true
           install: git mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-MinHook
+
+      - name: Build a new release with required UCRT64 packages.
         shell: msys2 {0}
         run: |
           which gcc
