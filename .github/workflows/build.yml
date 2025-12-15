@@ -37,4 +37,4 @@ jobs:
       - name: Build a new release with required UCRT64 packages.
         shell: msys2 {0}
         run: |
-          which gcc
+          dir
