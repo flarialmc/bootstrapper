@@ -31,13 +31,13 @@ jobs:
           update: true
           install: git mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-MinHook
 
-      - name: Checkout
+      - name: Clone the target repository.
         uses: actions/checkout@v4
 
       - name: Build a new release with required UCRT64 packages.
         shell: msys2 {0}
         run: |
-          Build.cmd
+          ./Build.cmd
 
       - name: Upload to CDN.
         uses: actions/checkout@v4
