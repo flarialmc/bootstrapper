@@ -1,0 +1,15 @@
+name: Build Bootstrapper.
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: msys2/setup-msys2@v2
+      - shell: msys2 {0}
+        run: |
+          uname -a
