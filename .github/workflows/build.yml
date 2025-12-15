@@ -9,9 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Check.
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
     - shell: bash
-      run: |
+    - run: |
         if [[ "${{ github.event.head_commit.message }}" != *"release:"* ]]; then
             gh run cancel ${{ github.run_id }}
             gh run watch ${{ github.run_id }}
