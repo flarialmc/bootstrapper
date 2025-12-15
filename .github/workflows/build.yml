@@ -29,14 +29,9 @@ jobs:
         uses: msys2/setup-msys2@v2
         with: 
           update: true
+          install: git mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-MinHook
 
-      - name: Install required UCRT64 packages.
+      - name: Build a new release with required UCRT64 packages.
         shell: msys2 {0}
         run: |
-          pacman -Syu mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-MinHook --noconfirm 
-
-      - name: Build a new release.
-        shell: msys2 {0}
-        run: |
-          uname -a
-          gcc --version
+          which gcc
