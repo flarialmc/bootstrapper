@@ -27,8 +27,10 @@ jobs:
     steps:
       - name: Setup MSYS2
         uses: msys2/setup-msys2@v2
+        with: 
+          update: true
 
       - name: Build
         shell: msys2 {0}
         run: |
-          uname -a
+          pacman -Syu mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-MinHook --noconfirm 
