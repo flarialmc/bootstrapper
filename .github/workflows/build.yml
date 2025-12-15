@@ -38,11 +38,3 @@ jobs:
         shell: msys2 {0}
         run: |
           ./Build.cmd
-
-      - name: Upload to CDN.
-        uses: actions/checkout@v4
-        with:
-          repository: 'flarialmc/newcdn'
-          ref: 'main'
-          path: 'cdn'
-          token: ${{secrets.ACTIONS_GITHUB_TOKEN}}
