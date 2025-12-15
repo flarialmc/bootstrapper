@@ -9,10 +9,10 @@ jobs:
   checkout:
     runs-on: ubuntu-latest
     steps:
-      - name: Check if a build should be released.
+      - name: Checkout the repository.
         uses: actions/checkout@v4
 
-      - name: Check
+      - name: Check if a build should be released.
         env:
             GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -30,6 +30,9 @@ jobs:
           msystem: UCRT64
           update: true
           install: git mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-MinHook
+
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Build a new release with required UCRT64 packages.
         shell: msys2 {0}
