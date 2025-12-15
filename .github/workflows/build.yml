@@ -9,10 +9,8 @@ jobs:
   checkout:
     runs-on: ubuntu-latest
     steps:
-      - name: Check if a build should be released.
-        uses: actions/checkout@v4
-
       - name: Check
+        uses: actions/checkout@v4
         env:
             GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -25,14 +23,15 @@ jobs:
     runs-on: windows-latest
     needs: checkout
     steps:
-      - name: Install & setup MSYS2 environment.
+      - name: Build
+        uses: actions/checkout@v4
         uses: msys2/setup-msys2@v2
+        
         with: 
           msystem: UCRT64
           update: true
           install: git mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-MinHook
-
-      - name: Build a new release with required UCRT64 packages.
+        
         shell: msys2 {0}
         run: |
-          which gcc
+          dir
