@@ -1,7 +1,7 @@
 #include <minhook.h>
+#include <d3d12.h>
 #include <dxgi1_4.h>
 
-BOOL (*_ClipCursor)(PVOID) = {};
 ATOM (*_RegisterClassExW)(PVOID) = {};
 HRESULT (*_Present)(PVOID, UINT, UINT) = {};
 HRESULT (*_ResizeBuffers)(PVOID, UINT, UINT, UINT, DXGI_FORMAT, UINT) = {};
@@ -33,28 +33,6 @@ __declspec(dllexport) EXCEPTION_DISPOSITION __CxxFrameHandler4(PVOID pExcept, PV
     return __CxxFrameHandler4(pExcept, pRN, pContext, pDC);
 }
 
-LRESULT $WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-    static WNDPROC WindowProc = {};
-
-    if (!WindowProc)
-    {
-        SetClassLongPtrW(hWnd, GCLP_HCURSOR, (LONG_PTR)LoadCursorW(NULL, IDC_ARROW));
-        WindowProc = (PVOID)SetWindowLongPtrW(hWnd, GWLP_WNDPROC, (LONG_PTR)$WindowProc);
-    }
-
-    if (uMsg == WM_WINDOWPOSCHANGED)
-    {
-        GUITHREADINFO _ = {.cbSize = sizeof _};
-        GetGUIThreadInfo(GetCurrentThreadId(), &_);
-
-        if (_.hwndActive && _.hwndActive == _.hwndCapture && _.hwndActive != _.hwndMoveSize)
-            ClipCursor(&(RECT){});
-    }
-
-    return CallWindowProcW(WindowProc, hWnd, uMsg, wParam, lParam);
-}
-
 HRESULT $Present(PVOID pSwapChain, UINT SyncInterval, UINT Flags)
 {
     if (!SyncInterval)
@@ -80,71 +58,54 @@ HRESULT $ResizeBuffers1(PVOID pSwapChain, UINT BufferCount, UINT Width, UINT Hei
 HRESULT $CreateSwapChainForHwnd(PVOID pFactory, PVOID pDevice, HWND hWnd, DXGI_SWAP_CHAIN_DESC1 *pDesc,
                                 PVOID pFullscreenDesc, PVOID pRestrictToOutput, IDXGISwapChain3 **ppSwapChain)
 {
-    static BOOL _ = {};
+    static BOOL bHooked = FALSE;
     pDesc->Flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
 
     HRESULT hResult =
         _CreateSwapChainForHwnd(pFactory, pDevice, hWnd, pDesc, pFullscreenDesc, pRestrictToOutput, ppSwapChain);
 
-    if (!_ && !hResult)
+    if (!bHooked && !hResult)
     {
         MH_CreateHook((*ppSwapChain)->lpVtbl->Present, $Present, (PVOID)&_Present);
         MH_CreateHook((*ppSwapChain)->lpVtbl->ResizeBuffers, $ResizeBuffers, (PVOID)&_ResizeBuffers);
         MH_CreateHook((*ppSwapChain)->lpVtbl->ResizeBuffers1, $ResizeBuffers1, (PVOID)&_ResizeBuffers1);
-
-        _ = !MH_EnableHook(MH_ALL_HOOKS);
-        $WindowProc(hWnd, WM_NULL, 0, 0);
+        MH_EnableHook(MH_ALL_HOOKS);
+        bHooked = TRUE;
     }
 
     return hResult;
 }
 
-BOOL $SetCursorPos(INT X, INT Y)
+HRESULT $D3D12CreateDevice(IUnknown *pAdapter, D3D_FEATURE_LEVEL MinimumFeatureLevel, REFIID riid, PVOID *ppDevice)
 {
-    return FALSE;
-}
-
-HCURSOR $SetCursor(HCURSOR hCursor)
-{
-    return NULL;
-}
-
-BOOL $ClipCursor(PRECT pRect)
-{
-    HWND hWnd = GetActiveWindow();
-
-    if (hWnd && pRect)
-    {
-        GetClientRect(hWnd, pRect);
-        pRect->top = (pRect->bottom - pRect->top) / 2;
-        pRect->left = (pRect->right - pRect->left) / 2;
-
-        ClientToScreen(hWnd, (PPOINT)pRect);
-        pRect->right = pRect->left;
-        pRect->bottom = pRect->top;
-    }
-
-    return _ClipCursor(pRect);
+    return DXGI_ERROR_UNSUPPORTED;
 }
 
 ATOM $RegisterClassExW(PWNDCLASSEXW pWndClass)
 {
-    static BOOL _ = {};
+    static BOOL bHooked = FALSE;
 
-    if (!_)
+    if (!bHooked)
     {
-        MH_CreateHook(SetCursor, (PVOID)$SetCursor, NULL);
-        MH_CreateHook(SetCursorPos, (PVOID)$SetCursorPos, NULL);
-        MH_CreateHook(ClipCursor, $ClipCursor, (PVOID)&_ClipCursor);
+        WCHAR szPath[MAX_PATH] = {};
+        ExpandEnvironmentStringsW(L"%LOCALAPPDATA%\\Flarial\\Client\\Config\\Bootstrapper.cfg", szPath, MAX_PATH);
 
-        IDXGIFactory2 *pFactory = {};
+        if (GetPrivateProfileIntW(L"Flarial", L"D3D11", FALSE, szPath) == TRUE)
+        {
+            HMODULE hModule = LoadLibraryExW(L"D3D12", NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
+            PROC D3D12CreateDevice = GetProcAddress(hModule, "D3D12CreateDevice");
+            MH_CreateHook(D3D12CreateDevice, $D3D12CreateDevice, NULL);
+        }
+
+        IDXGIFactory2 *pFactory = NULL;
         CreateDXGIFactory(&IID_IDXGIFactory2, (PVOID)&pFactory);
 
         PVOID CreateSwapChainForHwnd = pFactory->lpVtbl->CreateSwapChainForHwnd;
         MH_CreateHook(CreateSwapChainForHwnd, $CreateSwapChainForHwnd, (PVOID)&_CreateSwapChainForHwnd);
 
-        _ = !MH_EnableHook(MH_ALL_HOOKS);
+        MH_EnableHook(MH_ALL_HOOKS);
         pFactory->lpVtbl->Release(pFactory);
+        bHooked = TRUE;
     }
 
     return _RegisterClassExW(pWndClass);

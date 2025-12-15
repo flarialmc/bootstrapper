@@ -1,30 +1,15 @@
-# Igneous
+# Flarial Client Bootstrapper
 
 > [!CAUTION]
 > **Only supported on Windows x64!**
 
-Fixes various bugs related to Minecraft: Bedrock Edition (GDK).
+Bootstraps functionalities that cannot be implemented via the client's DLL at runtime.
 
-## Fixes
+## Features
 
-|Issue|Summary|
-|-|-|
-|[MCPE-15796](https://bugs.mojang.com/browse/MCPE-15796)|Cursor is not recentered upon the opening of a new gui|
-|[MCPE-98861](https://bugs.mojang.com/browse/MCPE-98861)|Significant input delay on devices with Render Dragon|
-|[MCPE-110006](https://bugs.mojang.com/browse/MCPE-110006)|Vsync not being able to be turned off|
-|[MCPE-166745](https://bugs.mojang.com/browse/MCPE-166745)|FPS is capped at double the screen's refresh rate when v-sync is disabled|
-|[MCPE-230832](https://bugs.mojang.com/browse/MCPE-230832)|Mouse cursor moves in the background during gameplay, disrupting gameplay|
+- Properly fix the game's V-Sync Off implementation or "V-Sync Disabler".
 
-## Usage
-- [Download](https://github.com/Aetopia/Igneous/releases/latest/download/vcruntime140_1.dll) the latest release of Igneous.
-
-- Run the following command in PowerShell to find where the game is located:
-
-    ```powershell
-    & "$ENV:SystemRoot\explorer.exe" "$((Get-AppxPackage "Microsoft.MinecraftUWP").InstallLocation)"
-    ```
-
-- Place the dynamic link library in the opened folder & launch the game.
+- Ability to force DirectX 11 or "Better Frames".
 
 ## FAQ
 
