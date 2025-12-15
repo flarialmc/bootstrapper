@@ -9,7 +9,7 @@ jobs:
   checkout:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Check if a build should be released.
         uses: actions/checkout@v4
 
       - name: Check
@@ -21,16 +21,16 @@ jobs:
             exit 1
           fi
 
-  build:
+  setup:
     runs-on: windows-latest
     needs: checkout
     steps:
-      - name: Setup MSYS2
+      - name: Install & setup MSYS2 environment.
         uses: msys2/setup-msys2@v2
         with: 
           update: true
 
-      - name: Build
+      - name: Install required UCRT64 packages.
         shell: msys2 {0}
         run: |
           pacman -Syu mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-MinHook --noconfirm 
