@@ -23,8 +23,8 @@ jobs:
     runs-on: windows-latest
     needs: checkout
     steps:
+      - uses: actions/checkout@v4
       - name: Build
-        uses: actions/checkout@v4
         uses: msys2/setup-msys2@v2
         
         with: 
