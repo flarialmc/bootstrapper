@@ -21,7 +21,7 @@ jobs:
             exit 1
           fi
 
-  setup:
+  build:
     runs-on: windows-latest
     needs: checkout
     steps:
@@ -35,12 +35,8 @@ jobs:
         run: |
           pacman -Syu mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-MinHook --noconfirm 
 
-  build:
-    runs-on: windows-latest
-    needs: setup
-    steps:
-       - name: Build a new release.
-         shell: msys2 {0} -ucrt64
-         run: |
+      - name: Build a new release.
+        shell: msys2 {0} -ucrt64
+        run: |
           uname -a
           gcc.exe
