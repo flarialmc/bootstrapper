@@ -39,13 +39,15 @@ jobs:
         run: |
           ./Build.cmd
       
-      - name: Deploy a new release to the CDN.
+      - name: Check the CDN repository.
         uses: actions/checkout@v4
         shell: bash
         with:
           repository: 'flarialmc/newcdn'
           ref: 'main'
           path: 'cdn'
+
+      - name: Deploy a new release to the CDN.
         run: |
           cd "cdn"
           git config --global user.name "GitHub Actions Bot"
