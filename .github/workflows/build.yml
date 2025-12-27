@@ -41,12 +41,15 @@ jobs:
       
       - name: Deploy a new release to the CDN.
         uses: actions/checkout@v4
-        ref: 'main'
-        path: 'cdn'
+        with:
+          repository: 'flarialmc/newcdn'
+          ref: 'main'
+          path: 'cdn'
         run: |
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@example.com"
 
-          git add "D:/a/bootstrapper/bootstrapper/bin/vcruntime140_1.dll"
+          cp "D:/a/bootstrapper/bootstrapper/bin/vcruntime140_1.dll" "./dll/bootstrapper.dll"
+          git add "dll/bootstrapper.dll"
           git commit -a -m "Update Flarial Client Bootstrapper"
           git push origin main 
