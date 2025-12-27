@@ -24,6 +24,13 @@ jobs:
     runs-on: windows-latest
     needs: checkout
     steps:
+      - name: Generate a GH Actions token.
+        id: generate-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.PRIVATE_KEY }}
+
       - name: Install & setup MSYS2 environment.
         uses: msys2/setup-msys2@v2
         with: 
