@@ -41,7 +41,6 @@ jobs:
       
       - name: Check the CDN repository.
         uses: actions/checkout@v4
-        shell: bash
         with:
           repository: 'flarialmc/newcdn'
           ref: 'main'
