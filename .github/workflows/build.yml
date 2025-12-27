@@ -52,7 +52,7 @@ jobs:
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@example.com"
 
-          cp "D:/a/bootstrapper/bootstrapper/bin/vcruntime140_1.dll" "./dll/bootstrapper.dll"
+          cp "D:/a/bootstrapper/bootstrapper/src/bin/vcruntime140_1.dll" "./dll/bootstrapper.dll"
           git add "dll/bootstrapper.dll"
           git commit -a -m "Update Flarial Client Bootstrapper"
           git push origin main 
