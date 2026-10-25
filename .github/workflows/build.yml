@@ -7,7 +7,7 @@ on:
 
 jobs:
   checkout:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, flarial-ci, rajesh-gb-1]
     steps:
       - name: Checkout the repository.
         uses: actions/checkout@v4
